@@ -1,9 +1,16 @@
 fun main() {
+    /*
+     * Count number of increases in the List<Int> passed to the function.
+     */
+    fun countIncreases(numbers: List<Int>): Int {
+        return numbers.zipWithNext().count  { (first, second) -> second > first }
+    }
+
     fun part1(input: List<String>) =
-        input.map(String::toInt).zipWithNext().count { it -> it.second > it.first }
+        countIncreases(input.map(String::toInt))
 
     fun part2(input: List<String>) =
-        input.map(String::toInt).windowed(3).zipWithNext().count { it -> it.second.sum() > it.first.sum() }
+        countIncreases(input.map(String::toInt).windowed(3) { it.sum() })
 
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day01_test")
