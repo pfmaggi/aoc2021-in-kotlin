@@ -1,35 +1,57 @@
+enum class Command {
+    FORWARD,
+    DOWN,
+    UP
+}
+
 fun main() {
+    data class Instruction(val command: Command, val value: Int)
+
+    fun String.toCommand() : Command {
+        val command = when(this) {
+            "forward" -> Command.FORWARD
+            "down" -> Command.DOWN
+            "up" -> Command.UP
+            else -> throw IllegalArgumentException("Invalid command")
+        }
+        return command
+    }
+
+    fun List<String>.toInstructions() : List<Instruction> {
+        return this.map { line ->
+            val (command, value) = line.split(" ")
+            Instruction(command.toCommand(), value.toInt())
+        }
+    }
+
     fun part1(input: List<String>) : Int {
+        val instructions = input.toInstructions()
         var position = 0
         var depth = 0
-        input.forEach { line ->
-            if (line.startsWith("forward")) {
-                position += line.substring(8).toInt()
-            } else if (line.startsWith("down")) {
-                depth += line.substring(5).toInt()
-            } else if (line.startsWith("up")) {
-                depth -= line.substring(3).toInt()
+        for ((command, value) in instructions) {
+            when (command) {
+                Command.FORWARD -> position += value
+                Command.DOWN -> depth += value
+                Command.UP -> depth -= value
             }
-
         }
         return depth * position
     }
 
     fun part2(input: List<String>) : Int {
+        val instructions = input.toInstructions()
         var position = 0
         var aim = 0
         var depth = 0
-        input.forEach { line ->
-            if (line.startsWith("forward")) {
-                val value = line.substring(8).toInt()
-                position += value
-                depth += value * aim
-            } else if (line.startsWith("down")) {
-                aim += line.substring(5).toInt()
-            } else if (line.startsWith("up")) {
-                aim -= line.substring(3).toInt()
+        for ((command, value) in instructions) {
+            when (command) {
+                Command.FORWARD -> {
+                    position += value
+                    depth += value * aim
+                }
+                Command.DOWN -> aim += value
+                Command.UP -> aim -= value
             }
-
         }
         return depth * position
     }
