@@ -1,27 +1,16 @@
 fun main() {
-    fun part1(input: List<String>): Int {
+    fun compute(input: List<String>, full: Boolean): Int {
         val fields: MutableMap<AoCPoint, Int> = mutableMapOf()
         input.map { it.split(" -> ") }.map { line ->
             val a = line[0].split(",").map { it.toInt() }
             val b = line[1].split(",").map { it.toInt() }
             val pointA = AoCPoint(a)
             val pointB = AoCPoint(b)
-            for (point in pointA.rangeToPartial(pointB)) {
-                fields[point] = fields.getOrDefault(point, 0) + 1
-            }
-        }
-        return fields.filterValues { it > 1 }.count()
-    }
-
-    fun part2(input: List<String>): Int {
-        val fields: MutableMap<AoCPoint, Int> = mutableMapOf()
-        input.map { it.split(" -> ") }.map { line ->
-            val a = line[0].split(",").map { it.toInt() }
-            val b = line[1].split(",").map { it.toInt() }
-            val pointA = AoCPoint(a)
-            val pointB = AoCPoint(b)
-            for (point in pointA.rangeToFull(pointB)) {
-                fields[point] = fields.getOrDefault(point, 0) + 1
+            if (full or (pointA.x == pointB.x) or (pointA.y == pointB.y)) {
+                // Only process horizontal and vertical lines if full == false
+                for (point in pointA..pointB) {
+                    fields[point] = fields.getOrDefault(point, 0) + 1
+                }
             }
         }
         return fields.filterValues { it > 1 }.count()
@@ -29,12 +18,12 @@ fun main() {
 
     // test if implementation meets criteria from the description, like:
     val testInput = readInput("Day05_test")
-    check(part1(testInput) == 5)
-    check(part2(testInput) == 12)
+    check(compute(testInput, false) == 5)
+    check(compute(testInput, true) == 12)
 
     val input = readInput("Day05")
-    println(part1(input))
-    println(part2(input))
+    println(compute(input, false))
+    println(compute(input, true))
 }
 
 class AoCPoint(val x: Int, val y: Int) : Comparable<AoCPoint> {
@@ -47,8 +36,7 @@ class AoCPoint(val x: Int, val y: Int) : Comparable<AoCPoint> {
         return this.y - other.y
     }
 
-    fun rangeToFull(that: AoCPoint) = AoCPointRange(this, that, true)
-    fun rangeToPartial(that: AoCPoint) = AoCPointRange(this, that, false)
+    operator fun rangeTo(that: AoCPoint) = AoCPointRange(this, that)
 
     operator fun inc(): AoCPoint {
         return AoCPoint(this.x + 1, this.y + 1)
@@ -77,15 +65,14 @@ class AoCPoint(val x: Int, val y: Int) : Comparable<AoCPoint> {
 class AoCPointRange(
     override val start: AoCPoint,
     override val endInclusive: AoCPoint,
-    private val full: Boolean
 ) : ClosedRange<AoCPoint>, Iterable<AoCPoint> {
 
     override fun iterator(): Iterator<AoCPoint> {
-        return if (full) AoCPointIteratorFull(start, endInclusive) else AoCPointIteratorPartial(start, endInclusive)
+        return AoCPointIterator(start, endInclusive)
     }
 }
 
-class AoCPointIteratorFull(private val start: AoCPoint, private val endInclusive: AoCPoint) : Iterator<AoCPoint> {
+class AoCPointIterator(private val start: AoCPoint, private val endInclusive: AoCPoint) : Iterator<AoCPoint> {
     private var initValue = start
     private var currentValue = start
     private var incrementX = if (start.x < endInclusive.x) 1 else -1
@@ -104,29 +91,6 @@ class AoCPointIteratorFull(private val start: AoCPoint, private val endInclusive
         } else {
             AoCPoint(initValue.x + incrementX, initValue.y + incrementY)
         }
-        return currentValue
-    }
-}
-
-class AoCPointIteratorPartial(private val start: AoCPoint, private val endInclusive: AoCPoint) : Iterator<AoCPoint> {
-    private var initValue = start
-    private var currentValue = start
-    private var incrementX = if (start.x < endInclusive.x) 1 else -1
-    private var incrementY = if (start.y < endInclusive.y) 1 else -1
-
-    override fun hasNext(): Boolean {
-        return if ((start.x == endInclusive.x) or (start.y == endInclusive.y)) {
-            currentValue != endInclusive
-        } else false
-    }
-
-    override fun next(): AoCPoint {
-        currentValue = initValue
-        initValue = if (start.x == endInclusive.x) {
-            AoCPoint(initValue.x, initValue.y + incrementY)
-        } else if (start.y == endInclusive.y) {
-            AoCPoint(initValue.x + incrementX, initValue.y)
-        } else initValue
         return currentValue
     }
 }
