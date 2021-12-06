@@ -1,27 +1,23 @@
 fun main() {
-    fun compute(input: List<String>, days: Int) : Long {
-        val firstGeneration = input[0].split(",").map(String::toInt)
-        var fishMap = mutableMapOf<Int, Long>()
-        firstGeneration.forEach { fish ->
-            fishMap[fish] = fishMap.getOrDefault(fish, 0)+1
-        }
+    fun compute(input: List<String>, days: Int): Long {
+        var fishArray = LongArray(9)
+
+        input[0].split(",").map(String::toInt).map {fish ->
+            fishArray[fish] = fishArray[fish] + 1}
+
         repeat(days) {
-            val newGeneration = mutableMapOf<Int, Long>()
-            fishMap.forEach { fish ->
-                if (fish.key == 0) {
-                    newGeneration[8] = fish.value
-                    newGeneration[6] = newGeneration.getOrDefault(6, 0)+fish.value
+            val newGeneration = LongArray(9)
+            for (idx in fishArray.indices) {
+                if (idx == 0) {
+                    newGeneration[8] = fishArray[idx]
+                    newGeneration[6] = newGeneration[6] + fishArray[idx]
                 } else {
-                    newGeneration[fish.key - 1] = newGeneration.getOrDefault(fish.key-1, 0)+fish.value
+                    newGeneration[idx - 1] = newGeneration[idx - 1] + fishArray[idx]
                 }
             }
-            fishMap = newGeneration
+            fishArray = newGeneration
         }
-        var result = 0L
-        fishMap.forEach {
-            result += it.value
-        }
-        return result
+        return fishArray.sum()
     }
 
     // test if implementation meets criteria from the description, like:
