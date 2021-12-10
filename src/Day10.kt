@@ -4,7 +4,7 @@ fun main() {
     val mapping = mapOf(')' to '(', ']' to '[', '}' to '{', '>' to '<')
 
     fun part1(input: List<String>): Int {
-        val points = mapOf<Char, Int>(
+        val points = mapOf(
             ')' to 3,
             ']' to 57,
             '}' to 1197,
@@ -12,28 +12,25 @@ fun main() {
         )
         val parens = mutableListOf<Char>()
         var result = 0
-        input.map { line ->
-            var notFoundYet = true
-            line.chunked(1).map { paren ->
-                if (notFoundYet) {
-                    if (opening.contains(paren[0])) parens.add(paren[0])
-                    if (closing.contains(paren[0])) {
-                        if (mapping[paren[0]] == parens.last()) {
-                            parens.removeLast()
-                        } else {
-                            points[paren[0]]?.apply { result += this }
-                            notFoundYet = false
-                        }
+        checkLine@
+        for (line in input) {
+            parens.clear()
+            for (paren in line) {
+                if (opening.contains(paren)) parens.add(paren)
+                if (closing.contains(paren)) {
+                    if (mapping[paren] != parens.last()) {
+                        result += points[paren] as Int
+                        continue@checkLine
                     }
+                    parens.removeLast()
                 }
             }
-            parens.clear()
         }
         return result
     }
 
     fun part2(input: List<String>): Long {
-        val points = mapOf<Char, Int>(
+        val points = mapOf(
             '(' to 1,
             '[' to 2,
             '{' to 3,
@@ -41,26 +38,23 @@ fun main() {
         )
         val parens = mutableListOf<Char>()
         val resultList = mutableListOf<Long>()
-        input.map { line ->
-            var isValidLine = true
-            var result = 0L
-            line.chunked(1).map { paren ->
-                if (opening.contains(paren[0])) parens.add(paren[0])
-                if (closing.contains(paren[0])) {
-                    if (mapping[paren[0]] == parens.last()) {
-                        parens.removeLast()
-                    } else {
-                        isValidLine = false
-                    }
-                }
-            }
-            if (isValidLine) {
-                parens.reversed().chunked(1).map { paren ->
-                    points[paren[0]]?.apply { result = result * 5 + this }
-                }
-                resultList.add(result)
-            }
+        checkLine@
+        for (line in input) {
             parens.clear()
+            var result = 0L
+            for (paren in line) {
+                if (opening.contains(paren)) parens.add(paren)
+                if (closing.contains(paren)) {
+                    if (mapping[paren] != parens.last()) {
+                        continue@checkLine
+                    }
+                    parens.removeLast()
+                }
+            }
+            for (paren in parens.reversed()) {
+                result = result * 5 + points[paren] as Int
+            }
+            resultList.add(result)
         }
         resultList.sort()
         return resultList[resultList.size / 2]

@@ -1,24 +1,23 @@
 fun main() {
     fun part1(input: List<String>): Int {
-        val numbers = input.map { line ->
-            line.chunked(1).map(String::toInt)
-        }
         val numbersMap = mutableMapOf<Pair<Int, Int>, Int>()
-        numbers.forEachIndexed { idx1, list ->
-            list.forEachIndexed { idx2, number ->
-                numbersMap[Pair(idx1, idx2)] = number
+        val sizeX = input[0].length - 1
+        val sizeY = input.size - 1
+        input.forEachIndexed { y, line ->
+            line.forEachIndexed { x, char ->
+                numbersMap[Pair(x, y)] = char.code - 48
             }
         }
-        val sizeX = numbers[0].size - 1
-        val sizeY = numbers.size - 1
+
         var result = 0
-        numbersMap.forEach() { (a, b), value ->
-            var small = true
-            if (a > 0) if (value >= numbersMap[Pair(a - 1, b)]!!) small = false
-            if (a < sizeY) if (value >= numbersMap[Pair(a + 1, b)]!!) small = false
-            if (b > 0) if (value >= numbersMap[Pair(a, b - 1)]!!) small = false
-            if (b < sizeX) if (value >= numbersMap[Pair(a, b + 1)]!!) small = false
-            if (small) result += value + 1
+        checkMap@
+        for ((key, value) in numbersMap) {
+            val (x,y) = key
+            if (x > 0) if (value >= numbersMap[Pair(x - 1, y)] as Int) continue@checkMap
+            if (x < sizeX) if (value >= numbersMap[Pair(x + 1, y)] as Int) continue@checkMap
+            if (y > 0) if (value >= numbersMap[Pair(x, y - 1)] as Int) continue@checkMap
+            if (y < sizeY) if (value >= numbersMap[Pair(x, y + 1)] as Int) continue@checkMap
+            result += value + 1
         }
 
         return result
@@ -27,17 +26,14 @@ fun main() {
     fun part2(input: List<String>): Int {
         data class Cell(val value: Int, val counted: Boolean)
 
-        val numbers = input.map { line ->
-            line.chunked(1).map(String::toInt)
-        }
         val numbersMap = mutableMapOf<Pair<Int, Int>, Cell>()
-        numbers.forEachIndexed { idx1, list ->
-            list.forEachIndexed { idx2, number ->
-                numbersMap[Pair(idx1, idx2)] = Cell(number, false)
+        val sizeX = input[0].length - 1
+        val sizeY = input.size - 1
+        input.forEachIndexed { y, line ->
+            line.forEachIndexed { x, char ->
+                numbersMap[Pair(x, y)] = Cell(char.code - 48, false)
             }
         }
-        val sizeX = numbers[0].size - 1
-        val sizeY = numbers.size - 1
         val result = mutableListOf<Int>()
 
         fun countIt(x: Int, y: Int, cell: Cell): Int {
@@ -45,14 +41,17 @@ fun main() {
             var partialCount = 1
             numbersMap[Pair(x, y)] = Cell(cell.value, true)
             if (x > 0) partialCount += countIt(x - 1, y, numbersMap[Pair(x - 1, y)]!!)
-            if (x < sizeY) partialCount += countIt(x + 1, y, numbersMap[Pair(x + 1, y)]!!)
+            if (x < sizeX) partialCount += countIt(x + 1, y, numbersMap[Pair(x + 1, y)]!!)
             if (y > 0) partialCount += countIt(x, y - 1, numbersMap[Pair(x, y - 1)]!!)
-            if (y < sizeX) partialCount += countIt(x, y + 1, numbersMap[Pair(x, y + 1)]!!)
+            if (y < sizeY) partialCount += countIt(x, y + 1, numbersMap[Pair(x, y + 1)]!!)
 
             return partialCount
         }
 
-        numbersMap.forEach() { (x, y), cell ->
+        checkMap@
+        for ((key, cell) in numbersMap) {
+            if ((cell.value == 9) or (cell.counted)) continue@checkMap
+            val (x, y) = key
             result.add(countIt(x, y, cell))
         }
         result.sortDescending()
