@@ -41,7 +41,6 @@ fun main() {
         checkLine@
         for (line in input) {
             parens.clear()
-            var result = 0L
             for (paren in line) {
                 if (opening.contains(paren)) parens.add(paren)
                 if (closing.contains(paren)) {
@@ -51,10 +50,7 @@ fun main() {
                     parens.removeLast()
                 }
             }
-            for (paren in parens.reversed()) {
-                result = result * 5 + points[paren] as Int
-            }
-            resultList.add(result)
+            resultList.add(parens.reversed().fold(0) {sum, paren -> sum * 5 + points[paren] as Int})
         }
         resultList.sort()
         return resultList[resultList.size / 2]
