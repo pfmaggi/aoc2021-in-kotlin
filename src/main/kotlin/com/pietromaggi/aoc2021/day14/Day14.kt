@@ -32,24 +32,6 @@ fun parseInput(input: List<String>): Pair<String, Map<Rule, Char>> {
     return Pair(template, rules)
 }
 
-// This builds the actual list... too slow for part2
-//    fun part1(input: List<String>, steps: Int): Int {
-//        val (template, rules) = parseInput(input)
-//        var partial = template
-//        for (step in 1..steps) {
-//            val temp = listOf(partial[0].toString()) + partial.zipWithNext()
-//                .map { (first, second) -> "${rules[Rule(first, second)]}$second" }
-//            partial = temp.joinToString("")
-//        }
-//        val finalPolymer = partial.toList()
-//        val polymerFrequency = mutableListOf<Int>()
-//        for (element in finalPolymer.distinct()) {
-//            polymerFrequency.add(frequency(finalPolymer, element))
-//        }
-//        polymerFrequency.sort()
-//        return polymerFrequency.last() - polymerFrequency.first()
-//    }
-
 fun compute(input: List<String>, steps: Int): Long {
     val (template, rules) = parseInput(input)
     var polymer = mutableMapOf<Rule, Long>()
