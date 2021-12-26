@@ -32,5 +32,5 @@ tasks {
 }
 
 application {
-    mainClass.set("com.pietromaggi.aoc2021.day01.Day01Kt")
+    mainClass.set("com.pietromaggi.aoc2021.day24.Day24Kt")
 }
