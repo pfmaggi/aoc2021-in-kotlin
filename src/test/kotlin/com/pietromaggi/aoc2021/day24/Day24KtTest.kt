@@ -23,11 +23,6 @@ import org.junit.jupiter.api.Assertions.assertEquals
 
 @OptIn(ExperimentalTime::class)
 internal class Day24KtTest {
-    private val testInput: List<String>
-        get() {
-            return readInput("Day24_test")
-        }
-
     @Test
     fun toReg() {
         assertEquals(0, "w".toReg())
@@ -114,6 +109,7 @@ internal class Day24KtTest {
         assertEquals(0, compute(parse(readInput("Day24_reduced")), "99893999291967"))
         assertEquals(0, compute(parse(readInput("Day24_mod")), "99893999291967"))
         assertEquals(0, computeDirect("99893999291967"))
+        assertEquals(0, checkValue(99893999291967))
     }
 
     @Test
@@ -122,6 +118,7 @@ internal class Day24KtTest {
         assertEquals(0, compute(parse(readInput("Day24_reduced")), "34171911181211"))
         assertEquals(0, compute(parse(readInput("Day24_mod")), "34171911181211"))
         assertEquals(0, computeDirect("34171911181211"))
+        assertEquals(0, checkValue(34171911181211))
     }
 
     @Test
@@ -160,5 +157,16 @@ internal class Day24KtTest {
         assertEquals(compute(parse(readInput("Day24_orig")), "77777777777777"), computeDirect("77777777777777"))
         assertEquals(compute(parse(readInput("Day24_orig")), "88888888888888"), computeDirect("88888888888888"))
         assertEquals(compute(parse(readInput("Day24_orig")), "99999999999999"), computeDirect("99999999999999"))
+    }
+
+    @Test
+    fun checkValues() {
+        var start = TimeSource.Monotonic.markNow()
+
+        assertEquals(99893999291967, part1Checking())
+        println("Part1 found in ${start.elapsedNow()}")
+        start = TimeSource.Monotonic.markNow()
+        assertEquals(34171911181211, part2Checking())
+        println("Part2 found in ${start.elapsedNow()}")
     }
 }

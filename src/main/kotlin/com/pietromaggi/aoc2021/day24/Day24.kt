@@ -247,7 +247,7 @@ fun part2(input: List<String>): Long {
 }
 
 
-fun computeDirect(n: String) : Int {
+fun computeDirect(n: String): Int {
     var z = 26 * (n[0].digitToInt() + 6)
     z += n[1].digitToInt() + 12
     z *= 26
@@ -304,7 +304,60 @@ fun computeDirect(n: String) : Int {
     return z
 }
 
-fun part2Fast() : Int {
+fun checkValue(number: Long): Int {
+    val n = number.toString()
+    if (n.contains('0')) return -1
+    if (n[3].digitToInt() - 6 != n[4].digitToInt()) return -1
+    if (n[6].digitToInt() != n[7].digitToInt()) return -1
+    if (n[8].digitToInt() + 7 != n[9].digitToInt()) return -1
+    if (n[5].digitToInt() - 8 != n[10].digitToInt()) return -1
+    if (n[2].digitToInt() + 1 != n[11].digitToInt()) return -1
+    if (n[1].digitToInt() - 3 != n[12].digitToInt()) return -1
+    if (n[0].digitToInt() - 2 != n[13].digitToInt()) return -1
+
+    return 0
+}
+
+// n[0] = 3..9
+// n[1] = 4..9
+// n[2] = 1..8
+// n[3] = 7..9
+// n[4] = 1..3 G
+// n[5] = 9
+// n[6] = 1..9
+// n[7] = 1..9 G
+// n[8] = 1..2
+// n[9] = 8..9 G
+// n[10] = 1 G
+// n[11] = 2..9 G
+// n[12] = 1..6 G
+// n[13] = 1..7 G
+fun generateFromMonad() = buildList {
+        for (i0 in 3..9)
+            for (i1 in 4..9)
+                for (i2 in 1..8)
+                    for (i3 in 7..9)
+                        for (i6 in 1..9)
+                            for (i8 in 1..2)
+                                this.add(
+                                    i0 * 10000000000000+
+                                            i1 * 1000000000000L +
+                                            i2 * 100000000000L +
+                                            i3 * 10000000000L +
+                                            (i3 - 6) * 1000000000L +
+                                            900000000L +
+                                            i6 * 10000000L +
+                                            i6 * 1000000L +
+                                            i8 * 100000L +
+                                            (i8 + 7) * 10000L +
+                                            9000L +
+                                            (i2 + 1) * 100L +
+                                            (i1 - 3) * 10L +
+                                            (i0 - 2)
+                                )
+    }
+
+fun part2Fast(): Int {
     var number = "11111111111111"
 
     while (computeDirect(number) != 0) {
@@ -323,15 +376,47 @@ fun part1Fast(): Long {
     return number.toLong()
 }
 
+fun part2Checking(): Long {
+    var number = 11111111111111
+    var count = 0
+
+    while (checkValue(number) != 0) {
+        count++
+        if (count > 100000000) {
+            count = 0
+            println("Current number: $number")
+        }
+        number += 1
+    }
+    return number
+}
+
+fun part1Checking(): Long {
+    var number = 99999999999999L
+    var count = 0
+
+    while (checkValue(number) != 0) {
+        count++
+        if (count > 100000000) {
+            count = 0
+            println("Current number: $number")
+        }
+        number -= 1
+    }
+    return number
+}
+
 fun main() {
-    val input = readInput("Day24_mod")
+//    val input = readInput("Day24_mod")
+    val solutions = generateFromMonad()
 
     println("""
     ### DAY 24 ###
     ==============
     What is the largest model number accepted by MONAD?
-    --> ${part1Fast()}
+    --> ${solutions.maxOrNull()}
     What is the smallest model number accepted by MONAD?
-    --> ${part2Fast()}
+    --> ${solutions.minOrNull()}
+    Total solutions: ${solutions.count()} 
     """)
 }
