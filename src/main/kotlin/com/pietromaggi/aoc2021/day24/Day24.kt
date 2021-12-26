@@ -16,8 +16,6 @@
 
 package com.pietromaggi.aoc2021.day24
 
-import com.pietromaggi.aoc2021.readInput
-
 enum class Op {
     INP,
     ADD_NUM,
@@ -318,6 +316,15 @@ fun checkValue(number: Long): Int {
     return 0
 }
 
+// RULES
+// n[3] == n[4] + 6
+// n[6] == n[7]
+// n[8] == n[9] - 7
+// n[5] == n[10] + 8
+// n[2] == n[11] - 1
+// n[1] == n[12] + 4
+// n[0] == n[13] + 2
+// Valid ranges
 // n[0] = 3..9
 // n[1] = 4..9
 // n[2] = 1..8
@@ -332,6 +339,8 @@ fun checkValue(number: Long): Int {
 // n[11] = 2..9 G
 // n[12] = 1..6 G
 // n[13] = 1..7 G
+// Min = 34171911181211
+// Max = 99893999291967
 fun generateFromMonad() = buildList {
         for (i0 in 3..9)
             for (i1 in 4..9)
@@ -357,57 +366,7 @@ fun generateFromMonad() = buildList {
                                 )
     }
 
-fun part2Fast(): Int {
-    var number = "11111111111111"
-
-    while (computeDirect(number) != 0) {
-        number = number.increment()
-    }
-    println("My Solution is: $number")
-    return number.toInt()
-}
-
-fun part1Fast(): Long {
-    var number = "99999999999999"
-
-    while (computeDirect(number) != 0) {
-        number = number.decrement()
-    }
-    return number.toLong()
-}
-
-fun part2Checking(): Long {
-    var number = 11111111111111
-    var count = 0
-
-    while (checkValue(number) != 0) {
-        count++
-        if (count > 100000000) {
-            count = 0
-            println("Current number: $number")
-        }
-        number += 1
-    }
-    return number
-}
-
-fun part1Checking(): Long {
-    var number = 99999999999999L
-    var count = 0
-
-    while (checkValue(number) != 0) {
-        count++
-        if (count > 100000000) {
-            count = 0
-            println("Current number: $number")
-        }
-        number -= 1
-    }
-    return number
-}
-
 fun main() {
-//    val input = readInput("Day24_mod")
     val solutions = generateFromMonad()
 
     println("""

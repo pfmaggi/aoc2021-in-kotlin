@@ -72,7 +72,7 @@ internal class Day24KtTest {
         var number = "999999"
         var start = TimeSource.Monotonic.markNow()
         val original = buildList<Int> {
-            repeat(1000) {
+            repeat(100000) {
                 this.add(compute(parse(readInput("Day24_orig")), number + "99999999"))
                 number = number.decrement()
             }
@@ -83,7 +83,7 @@ internal class Day24KtTest {
 
         number = "999999"
         val reduced = buildList<Int> {
-            repeat(1000) {
+            repeat(100000) {
                 this.add(compute(parse(readInput("Day24_mod")), number + "99999999"))
                 number = number.decrement()
             }
@@ -159,14 +159,4 @@ internal class Day24KtTest {
         assertEquals(compute(parse(readInput("Day24_orig")), "99999999999999"), computeDirect("99999999999999"))
     }
 
-    @Test
-    fun checkValues() {
-        var start = TimeSource.Monotonic.markNow()
-
-        assertEquals(99893999291967, part1Checking())
-        println("Part1 found in ${start.elapsedNow()}")
-        start = TimeSource.Monotonic.markNow()
-        assertEquals(34171911181211, part2Checking())
-        println("Part2 found in ${start.elapsedNow()}")
-    }
 }
